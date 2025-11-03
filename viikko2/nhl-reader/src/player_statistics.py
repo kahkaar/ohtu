@@ -1,6 +1,7 @@
 class PlayerStats:
     def __init__(self, reader):
         self._players = reader.get_players()
+        self.nationalities = sorted(set([p.nationality for p in self._players]))
 
     def _sort_by_points(self, player):
         return player.points

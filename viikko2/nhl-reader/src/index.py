@@ -1,3 +1,7 @@
+from rich.console import Console
+from rich.prompt import Prompt
+from rich.table import Table
+
 from player_reader import PlayerReader
 from player_statistics import PlayerStats
 
@@ -6,11 +10,34 @@ def main():
     url = "https://studies.cs.helsinki.fi/nhlstats/2024-25/players"
     reader = PlayerReader(url)
     stats = PlayerStats(reader)
-    players = stats.top_scorers_by_nationality("FIN")
+    console = Console()
 
-    for player in players:
-        print(player)
+    nats = stats.nationalities
+    while True:
+        nationality = Prompt.ask(
+            "Nationality",
+            choices=nats,
+            case_sensitive=False,
+            default=""
+        ).upper()
 
+        if not nationality:
+            break
+
+        table = Table(title=f"Players from {nationality}")
+
+        table.add_column("Player", style="cyan", no_wrap=True)
+        table.add_column("Team(s)", style="magenta")
+        table.add_column("Goals", justify="right", style="green")
+        table.add_column("Assists", justify="right", style="green")
+        table.add_column("Points", justify="right", style="green")
+
+        players = stats.top_scorers_by_nationality(nationality)
+
+        for p in players:
+            table.add_row(p.name, p.team, str(p.goals), str(p.assists), str(p.points))
+
+        console.print(table)
 
 if __name__ == "__main__":
     main()
