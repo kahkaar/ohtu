@@ -1,3 +1,4 @@
+import requests
 from rich.console import Console
 from rich.prompt import Prompt
 from rich.table import Table
@@ -9,26 +10,24 @@ from player_statistics import PlayerStats
 def main():
     console = Console()
 
-    seasons = [
-        "2018-19",
-        "2019-20",
-        "2020-21",
-        "2021-22",
-        "2022-23",
-        "2023-24",
-        "2024-25",
-    ]
+    # Get seasons from html body; did not find a json endpoint for this
+    seasons = requests.get("https://studies.cs.helsinki.fi/nhlstats/").text
+    seasons = [s.strip() for s in seasons.split(",")]
+
+    # Remove bloat from first and last element
+    seasons[0] = seasons[0].split("following seasons available")[1].strip()
+    seasons[-1] = seasons[-1].split("</div>")[0].strip()
 
     season = Prompt.ask(
         "Season",
         choices=seasons,
-        default=seasons[-1]
+        default=seasons[-2]
     )
 
     url = f"https://studies.cs.helsinki.fi/nhlstats/{season}/players"
-
     reader = PlayerReader(url)
     stats = PlayerStats(reader)
+
     nats = stats.nationalities
 
     while True:
@@ -36,7 +35,7 @@ def main():
             "Nationality",
             choices=nats,
             case_sensitive=False,
-            default=""
+            default="",
         ).upper()
 
         if not nationality:
