@@ -1,6 +1,3 @@
-from email.policy import default
-from random import choice
-
 from rich.console import Console
 from rich.prompt import Prompt
 from rich.table import Table
