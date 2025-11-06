@@ -1,3 +1,6 @@
+from email.policy import default
+from random import choice
+
 from rich.console import Console
 from rich.prompt import Prompt
 from rich.table import Table
@@ -7,12 +10,30 @@ from player_statistics import PlayerStats
 
 
 def main():
-    url = "https://studies.cs.helsinki.fi/nhlstats/2024-25/players"
-    reader = PlayerReader(url)
-    stats = PlayerStats(reader)
     console = Console()
 
+    seasons = [
+        "2018-19",
+        "2019-20",
+        "2020-21",
+        "2021-22",
+        "2022-23",
+        "2023-24",
+        "2024-25",
+    ]
+
+    season = Prompt.ask(
+        "Season",
+        choices=seasons,
+        default=seasons[-1]
+    )
+
+    url = f"https://studies.cs.helsinki.fi/nhlstats/{season}/players"
+
+    reader = PlayerReader(url)
+    stats = PlayerStats(reader)
     nats = stats.nationalities
+
     while True:
         nationality = Prompt.ask(
             "Nationality",
@@ -24,7 +45,7 @@ def main():
         if not nationality:
             break
 
-        table = Table(title=f"Players from {nationality}")
+        table = Table(title=f"Season {season} players from {nationality}")
 
         table.add_column("Player", style="cyan", no_wrap=True)
         table.add_column("Team(s)", style="magenta")
