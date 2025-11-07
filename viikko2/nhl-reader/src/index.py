@@ -1,39 +1,32 @@
-import requests
 from rich.console import Console
 from rich.prompt import Prompt
 from rich.table import Table
 
 from player_reader import PlayerReader
 from player_statistics import PlayerStats
+from season_manager import SeasonManager
+from season_reader import SeasonReader
 
 
-def main():
-    console = Console()
+def build_table(title):
+    table = Table(title)
 
-    # Get seasons from html body; did not find a json endpoint for this
-    seasons = requests.get("https://studies.cs.helsinki.fi/nhlstats/").text
-    seasons = [s.strip() for s in seasons.split(",")]
+    table.add_column("Player", style="cyan", no_wrap=True)
+    table.add_column("Team(s)", style="magenta")
+    table.add_column("Goals", justify="right", style="green")
+    table.add_column("Assists", justify="right", style="green")
+    table.add_column("Points", justify="right", style="green")
 
-    # Remove bloat from first and last element
-    seasons[0] = seasons[0].split("following seasons available")[1].strip()
-    seasons[-1] = seasons[-1].split("</div>")[0].strip()
+    return table
 
-    season = Prompt.ask(
-        "Season",
-        choices=seasons,
-        default=seasons[-2]
-    )
 
-    url = f"https://studies.cs.helsinki.fi/nhlstats/{season}/players"
-    reader = PlayerReader(url)
-    stats = PlayerStats(reader)
-
-    nats = stats.nationalities
+def nationality_loop(console, stats, season):
+    nationalities = stats.nationalities
 
     while True:
         nationality = Prompt.ask(
             "Nationality",
-            choices=nats,
+            choices=nationalities,
             case_sensitive=False,
             default="",
         ).upper()
@@ -41,20 +34,31 @@ def main():
         if not nationality:
             break
 
-        table = Table(title=f"Season {season} players from {nationality}")
-
-        table.add_column("Player", style="cyan", no_wrap=True)
-        table.add_column("Team(s)", style="magenta")
-        table.add_column("Goals", justify="right", style="green")
-        table.add_column("Assists", justify="right", style="green")
-        table.add_column("Points", justify="right", style="green")
+        table = build_table(f"Season {season} players from {nationality}")
 
         players = stats.top_scorers_by_nationality(nationality)
 
         for p in players:
-            table.add_row(p.name, p.team, str(p.goals), str(p.assists), str(p.points))
+            table.add_row(*p.table_row())
 
         console.print(table)
+
+
+def main():
+    console = Console()
+
+    seasons_url = "https://studies.cs.helsinki.fi/nhlstats/"
+    season_reader = SeasonReader(seasons_url)
+
+    season_manager = SeasonManager(season_reader)
+    season = season_manager.ask()
+
+    players_url = f"https://studies.cs.helsinki.fi/nhlstats/{season}/players"
+    player_reader = PlayerReader(players_url)
+    stats = PlayerStats(player_reader)
+
+    nationality_loop(console, stats, season)
+
 
 if __name__ == "__main__":
     main()
