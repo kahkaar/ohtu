@@ -1,11 +1,4 @@
-from flask import (
-    Flask,
-    render_template,
-    redirect,
-    url_for,
-    request,
-    flash
-)
+from flask import Flask, flash, redirect, render_template, request, url_for
 
 from repositories.user_repository import user_repository
 from services.user_service import user_service
@@ -75,9 +68,9 @@ def render_register():
 
 @app.route("/register", methods=["POST"])
 def handle_register():
-    username = request.form.get("username")
-    password = request.form.get("password")
-    password_confirmation = request.form.get("password_confirmation")
+    username = request.form.get("username", "")
+    password = request.form.get("password", "")
+    password_confirmation = request.form.get("password_confirmation", "")
 
     try:
         user_service.create_user(username, password, password_confirmation)
