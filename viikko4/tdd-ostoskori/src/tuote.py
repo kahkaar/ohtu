@@ -10,5 +10,8 @@ class Tuote:
     def nimi(self):
         return self._nimi
 
-    def __repr__(self):
+    def __str__(self):
         return f"{self._nimi} hinta {self._hinta} euroa"
+
+    def __repr__(self):
+        return f"{self.__class__!s}({self.__dict__!r})"
