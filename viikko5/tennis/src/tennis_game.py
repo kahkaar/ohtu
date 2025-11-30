@@ -8,10 +8,10 @@ _SCORE = {0: "Love", 1: "Fifteen", 2: "Thirty", 3: "Forty"}
 
 
 class TennisGame:
-    def __init__(self, player1, player2):
-        self._p1 = player1
+    def __init__(self, player1_name, player2_name):
+        self._p1 = player1_name
         self._p1_score = 0
-        self._p2 = player2
+        self._p2 = player2_name
         self._p2_score = 0
 
     def _even_score(self):
