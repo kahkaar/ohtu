@@ -37,15 +37,29 @@ class Nollaus:
         self._sovelluslogiikka.nollaa()
 
 
+class Kumoa:
+    def __init__(self, sovelluslogiikka, arvo):
+        self._sovelluslogiikka = sovelluslogiikka
+        self._arvo = arvo
+
+    def suorita(self):
+        self._sovelluslogiikka.aseta_arvo(self._arvo)
+
+
 class Kayttoliittyma:
     def __init__(self, sovelluslogiikka, root):
         self._sovelluslogiikka = sovelluslogiikka
         self._root = root
+        self._edelliset_arvot = []
 
         self._komennot = {
             Komento.SUMMA: lambda: Summa(self._sovelluslogiikka, self._lue_syote),
             Komento.EROTUS: lambda: Erotus(self._sovelluslogiikka, self._lue_syote),
             Komento.NOLLAUS: lambda: Nollaus(self._sovelluslogiikka),
+            Komento.KUMOA: lambda: Kumoa(
+                self._sovelluslogiikka,
+                self._edelliset_arvot.pop() if self._edelliset_arvot else 0,
+            ),
         }
 
     def kaynnista(self):
@@ -103,9 +117,19 @@ class Kayttoliittyma:
         if not isinstance(komento, Komento):
             raise TypeError("Tuntematon komento")
 
-        komento_olio = self._komennot[komento]
-        komento_olio.suorita()
-        self._kumoa_painike["state"] = constants.NORMAL
+        if komento is not Komento.KUMOA:
+            self._edelliset_arvot.append(self._sovelluslogiikka.arvo())
+
+        komento_olio = self._komennot.get(komento)
+        if not komento_olio:
+            raise ValueError("Tuntematon komento")
+
+        komento_olio().suorita()
+
+        if len(self._edelliset_arvot) == 0:
+            self._kumoa_painike["state"] = constants.DISABLED
+        else:
+            self._kumoa_painike["state"] = constants.NORMAL
 
         if self._sovelluslogiikka.arvo() == 0:
             self._nollaus_painike["state"] = constants.DISABLED
