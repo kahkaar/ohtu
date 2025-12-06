@@ -1,5 +1,5 @@
 from enum import Enum
-from tkinter import ttk, constants, StringVar
+from tkinter import StringVar, constants, ttk
 
 
 class Komento(Enum):
@@ -9,10 +9,44 @@ class Komento(Enum):
     KUMOA = 4
 
 
+class Summa:
+    def __init__(self, sovelluslogiikka, syote):
+        self._sovelluslogiikka = sovelluslogiikka
+        self._syote = syote
+
+    def suorita(self):
+        arvo = self._syote()
+        self._sovelluslogiikka.plus(arvo)
+
+
+class Erotus:
+    def __init__(self, sovelluslogiikka, syote):
+        self._sovelluslogiikka = sovelluslogiikka
+        self._syote = syote
+
+    def suorita(self):
+        arvo = self._syote()
+        self._sovelluslogiikka.miinus(arvo)
+
+
+class Nollaus:
+    def __init__(self, sovelluslogiikka):
+        self._sovelluslogiikka = sovelluslogiikka
+
+    def suorita(self):
+        self._sovelluslogiikka.nollaa()
+
+
 class Kayttoliittyma:
     def __init__(self, sovelluslogiikka, root):
         self._sovelluslogiikka = sovelluslogiikka
         self._root = root
+
+        self._komennot = {
+            Komento.SUMMA: lambda: Summa(self._sovelluslogiikka, self._lue_syote),
+            Komento.EROTUS: lambda: Erotus(self._sovelluslogiikka, self._lue_syote),
+            Komento.NOLLAUS: lambda: Nollaus(self._sovelluslogiikka),
+        }
 
     def kaynnista(self):
         self._arvo_var = StringVar()
@@ -48,29 +82,29 @@ class Kayttoliittyma:
         )
 
         tulos_teksti.grid(columnspan=4)
-        self._syote_kentta.grid(columnspan=4, sticky=(constants.E, constants.W))
+        self._syote_kentta.grid(
+            columnspan=4,
+            sticky=(constants.E, constants.W),
+        )
         summa_painike.grid(row=2, column=0)
         erotus_painike.grid(row=2, column=1)
         self._nollaus_painike.grid(row=2, column=2)
         self._kumoa_painike.grid(row=2, column=3)
 
-    def _suorita_komento(self, komento):
-        arvo = 0
-
+    def _lue_syote(self):
         try:
             arvo = int(self._syote_kentta.get())
-        except Exception:
-            pass
+        except (TypeError, ValueError):
+            arvo = 0
 
-        if komento == Komento.SUMMA:
-            self._sovelluslogiikka.plus(arvo)
-        elif komento == Komento.EROTUS:
-            self._sovelluslogiikka.miinus(arvo)
-        elif komento == Komento.NOLLAUS:
-            self._sovelluslogiikka.nollaa()
-        elif komento == Komento.KUMOA:
-            pass
+        return arvo
 
+    def _suorita_komento(self, komento):
+        if not isinstance(komento, Komento):
+            raise TypeError("Tuntematon komento")
+
+        komento_olio = self._komennot[komento]
+        komento_olio.suorita()
         self._kumoa_painike["state"] = constants.NORMAL
 
         if self._sovelluslogiikka.arvo() == 0:
