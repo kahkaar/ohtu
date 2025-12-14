@@ -8,10 +8,9 @@ class Tekoaly:
 
         if self._siirto == 0:
             return "k"
-        elif self._siirto == 1:
+        if self._siirto == 1:
             return "p"
-        else:
-            return "s"
+        return "s"
 
     def aseta_siirto(self, siirto):
         # ei tehdä mitään

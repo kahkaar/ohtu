@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% from "_macros.html" import move_name %}
+
+{% block content %}
+<main class="card">
+  <header>
+    <h1>Rock — Paper — Scissors</h1>
+    <p class="lead">Choose a move{% if not game_started %} and an opponent{% endif %}.
+    </p>
+  </header>
+
+  <section class="score">{{ score }}</section>
+
+  {% if message %}
+  <div class="message">{{ message }}</div>
+  {% endif %}
+
+  <form action="/play" method="post">
+    <div class="controls">
+      <label class="muted">Opponent:</label>
+      {% if not game_started %}
+      <select name="opponent">
+        <option value="advanced">Improved AI (default)</option>
+        <option value="basic">Basic AI</option>
+        <option value="human">Human (2 players)</option>
+      </select>
+      {% else %}
+      <span class="muted">{{ opponent_label }}</span>
+      {% endif %}
+
+      {% if is_human_game %}
+      <label class="muted">Player {{ awaiting_player }} move:</label>
+      {% else %}
+      <label class="muted">Your move:</label>
+      {% endif %}
+
+      <div class="move-buttons">
+        <button class="move-btn" name="move" value="k">Rock</button>
+        <button class="move-btn" name="move" value="p">Paper</button>
+        <button class="move-btn" name="move" value="s">Scissors</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="meta">
+    {% if last_moves %}
+    {% if is_human_game %}
+    Last round: Player 1 {{ move_name(last_moves[0][0], move_names) }} — Player 2 {{ move_name(last_moves[0][1],
+    move_names) }}
+    {% else %}
+    Last round: You {{ move_name(last_moves[0][0], move_names) }} — Opponent {{ move_name(last_moves[0][1], move_names)
+    }}
+    {% endif %}
+    {% else %}
+    Make a move to start the game.
+    {% endif %}
+  </div>
+
+</main>
+{% endblock %}

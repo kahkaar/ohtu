@@ -1,5 +1,3 @@
-from webbrowser import get
-
 from tekoaly import Tekoaly
 from tekoaly_parannettu import TekoalyParannettu
 from tuomari import Tuomari
@@ -8,6 +6,8 @@ from user_io import UserIO
 
 class KPSLogic():
     """Class for basic game logic."""
+
+    _WIN_TARGET = 5
 
     def __init__(self, io: UserIO) -> None:
         self._ref = Tuomari()
@@ -36,12 +36,12 @@ class KPSLogic():
         """
         return self._io.get("Toisen pelaajan siirto: ")
 
-    def memorize_move(self, move: str) -> None:
+    def memorize_move(self, _move: str) -> None:
         """
         Memorize the move of the first player.
         Default implementation does nothing.
         """
-        pass
+        return None
 
     def play(self):
         """Logic for playing the game."""
@@ -54,6 +54,15 @@ class KPSLogic():
 
             self._ref.kirjaa_siirto(p1_move, p2_move)
             self._io.show(self._ref)
+
+            if (
+                self._ref.ekan_pisteet >= self._WIN_TARGET
+                or self._ref.tokan_pisteet >= self._WIN_TARGET
+            ):
+                self._io.show(
+                    f"Peli päättyi: {self._WIN_TARGET} voittoa täynnä."
+                )
+                break
 
             # For AI logic. Memorize the first player's move
             self.memorize_move(p1_move)

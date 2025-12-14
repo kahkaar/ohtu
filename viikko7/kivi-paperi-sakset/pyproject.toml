@@ -8,10 +8,51 @@ authors = [
 license = {text = "MIT"}
 requires-python = "^3.12"
 dependencies = [
+    "flask (>=3.1.2,<4.0.0)"
 ]
 
 [tool.poetry]
-package-mode = false
+packages = [
+    { include = "frontend", from = "src" },
+    { include = "kps_engine.py", from = "src" },
+    { include = "tekoaly.py", from = "src" },
+    { include = "tekoaly_parannettu.py", from = "src" },
+    { include = "tuomari.py", from = "src" },
+]
+
+include = [
+    { path = "src/frontend/templates/**" },
+    { path = "src/frontend/static/**" },
+]
+
+[tool.poetry.scripts]
+web = "frontend.__main__:main"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+pytest-cov = "^6.0.0"
+pylint = "^3.3.2"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+    "-q",
+    "--strict-markers",
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-fail-under=100",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "if __name__ == .__main__.:",
+]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

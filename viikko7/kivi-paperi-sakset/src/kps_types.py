@@ -1,6 +1,3 @@
-from kps_logic import KPSAdvancedAILogic, KPSAILogic, KPSLogic
-
-
 class KPSType():
     def __init__(
             self,
@@ -32,9 +29,9 @@ class KPSTypes():
 
     def get_type(self, key: str) -> KPSType | None:
         """Return the KPSType instance matching the provided key, or None if not found."""
-        for type in self._types:
-            if type.key == key:
-                return type
+        for kps_type in self._types:
+            if kps_type.key == key:
+                return kps_type
         return None
 
     def get_key_of_types(self) -> list[str]:

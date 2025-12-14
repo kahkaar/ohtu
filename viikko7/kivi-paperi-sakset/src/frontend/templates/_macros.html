@@ -1,0 +1,3 @@
+{% macro move_name(letter, move_names) -%}
+{{ move_names.get(letter, letter) }}
+{%- endmacro %}

@@ -17,18 +17,18 @@ class KPSApp():
     def _display_options(self) -> None:
         """Display the available options to the user."""
         self._io.show("Valitse pelataanko")
-        for type in self._types.get_types():
-            self._io.show(f" {type}")
+        for kps_type in self._types.get_types():
+            self._io.show(f" {kps_type}")
         self._io.show("Muilla valinnoilla lopetetaan")
 
-    def logic_factory(self, type: str) -> KPSLogic:
+    def logic_factory(self, game_type: str) -> KPSLogic:
         """Factory method to create KPSLogic instances based on type."""
 
-        if type == "a":
+        if game_type == "a":
             return KPSLogic(self._io)
-        elif type == "b":
+        if game_type == "b":
             return KPSAILogic(self._io)
-        elif type == "c":
+        if game_type == "c":
             return KPSAdvancedAILogic(self._io)
 
         raise ValueError("Unknown game type.")
@@ -46,7 +46,8 @@ class KPSApp():
 
             self._io.show(
                 "Peli loppuu kun pelaaja antaa virheellisen "
-                "siirron eli jonkun muun kuin k, p tai s"
+                "siirron eli jonkun muun kuin k, p tai s, "
+                "tai kun jompikumpi voittaa 5 kertaa"
             )
 
             logic = self.logic_factory(option)

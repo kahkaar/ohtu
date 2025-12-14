@@ -16,7 +16,7 @@ class TekoalyParannettu:
         self._vapaa_muisti_indeksi = self._vapaa_muisti_indeksi + 1
 
     def anna_siirto(self):
-        if self._vapaa_muisti_indeksi == 0 or self._vapaa_muisti_indeksi == 1:
+        if self._vapaa_muisti_indeksi in (0, 1):
             return "k"
 
         viimeisin_siirto = self._muisti[self._vapaa_muisti_indeksi - 1]
@@ -42,10 +42,9 @@ class TekoalyParannettu:
         # muulloin annetaan aina kivi
         if k > p or k > s:
             return "p"
-        elif p > k or p > s:
+        if p > k or p > s:
             return "s"
-        else:
-            return "k"
+        return "k"
 
         # Tehokkaampiakin tapoja löytyy, mutta niistä lisää
         # Johdatus Tekoälyyn kurssilla!

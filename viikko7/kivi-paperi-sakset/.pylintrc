@@ -1,0 +1,31 @@
+[MAIN]
+# Only lint the application code. Tests are handled separately.
+ignore-paths=
+    tests
+    .venv
+    .pytest_cache
+    __pycache__
+
+# Ensure imports like `from kps_app import ...` resolve (source lives in src/).
+init-hook='import sys; sys.path.insert(0, "src")'
+
+[MESSAGES CONTROL]
+# Keep error/warning checks useful, but don't enforce style/docstring rules.
+disable=
+    C0114,
+    C0115,
+    C0116,
+    C0103,
+    R0903,
+    R0913,
+    R0914,
+    R0915,
+    R0912,
+    R0911,
+    R0902
+
+[REPORTS]
+score=no
+
+[FORMAT]
+max-line-length=100
