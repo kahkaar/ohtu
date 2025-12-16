@@ -79,29 +79,30 @@ def test_play_when_game_already_ended_renders_reset_message():
     assert state.game is None
 
 
-def test_play_human_game_ends_at_five_wins_and_resets_state():
+def test_play_human_game_ends_at_three_wins_and_resets_state():
     app = create_app()
     client = app.test_client()
 
     state.start_new_game("human")
 
-    # Player 1 wins 5 rounds by playing Rock vs Scissors.
-    for i in range(4):
+    # First two rounds should redirect back to index.
+    for _ in range(2):
         r1 = client.post("/play", data={"move": "k", "opponent": "human"})
         assert r1.status_code == 200
         r2 = client.post("/play", data={"move": "s", "opponent": "human"})
         assert r2.status_code == 302
 
+    # Third win ends the match and renders the final screen directly.
     r1 = client.post("/play", data={"move": "k", "opponent": "human"})
     assert r1.status_code == 200
     r2 = client.post("/play", data={"move": "s", "opponent": "human"})
     assert r2.status_code == 200
     assert b"Match over" in r2.data
-    assert b"Score: 5 - 0" in r2.data
+    assert b"Score: 3 - 0" in r2.data
     assert state.game is None
 
 
-def test_play_ai_match_end_message_when_you_reach_five_wins():
+def test_play_ai_match_end_message_when_you_reach_three_wins():
     app = create_app()
     client = app.test_client()
 
@@ -114,18 +115,18 @@ def test_play_ai_match_end_message_when_you_reach_five_wins():
 
     state.game._ai = AlwaysScissors()
 
-    # Preload the score to 4-0.
-    for _ in range(4):
+    # Preload the score to 2-0, then win once via /play.
+    for _ in range(2):
         state.game._ref.kirjaa_siirto("k", "s")
 
     r = client.post("/play", data={"move": "k"})
     assert r.status_code == 200
-    assert b"You reached 5 wins" in r.data
-    assert b"Score: 5 - 0" in r.data
+    assert b"You reached 3 wins" in r.data
+    assert b"Score: 3 - 0" in r.data
     assert state.game is None
 
 
-def test_play_ai_match_end_message_when_opponent_reaches_five_wins():
+def test_play_ai_match_end_message_when_opponent_reaches_three_wins():
     app = create_app()
     client = app.test_client()
 
@@ -138,12 +139,12 @@ def test_play_ai_match_end_message_when_opponent_reaches_five_wins():
 
     state.game._ai = AlwaysPaper()
 
-    # Preload the score to 0-4.
-    for _ in range(4):
+    # Preload the score to 0-2, then lose once via /play.
+    for _ in range(2):
         state.game._ref.kirjaa_siirto("k", "p")
 
     r = client.post("/play", data={"move": "k"})
     assert r.status_code == 200
-    assert b"opponent reached 5 wins" in r.data
-    assert b"Score: 0 - 5" in r.data
+    assert b"opponent reached 3 wins" in r.data
+    assert b"Score: 0 - 3" in r.data
     assert state.game is None

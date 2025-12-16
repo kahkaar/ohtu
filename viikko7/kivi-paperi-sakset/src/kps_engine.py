@@ -26,7 +26,7 @@ class RoundResult:
 
 
 class Game:
-    _WIN_TARGET = 5
+    _WIN_TARGET = 3
 
     def __init__(self, game_type: GameType, memory_size: int = 10) -> None:
         self._ref = Tuomari()

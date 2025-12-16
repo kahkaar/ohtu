@@ -103,10 +103,10 @@ def play():
         if state.is_human_game:
             message = result.message
         else:
-            if state.game is not None and state.game.p1_points >= 5:
-                message = "Match over. You reached 5 wins."
+            if state.game is not None and state.game.p1_points >= 3:
+                message = "Match over. You reached 3 wins."
             else:
-                message = "Match over. The opponent reached 5 wins."
+                message = "Match over. The opponent reached 3 wins."
 
         state.reset()
         return render_template(

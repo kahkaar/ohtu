@@ -62,18 +62,18 @@ def test_game_ai_and_advanced_ai_paths():
     assert g2._ai._muisti[0] == "k"
 
 
-def test_game_ends_when_someone_reaches_five_wins():
+def test_game_ends_when_someone_reaches_three_wins():
     g = Game(GameType.HUMAN)
 
     last = None
-    for _ in range(5):
+    for _ in range(3):
         last = g.step("k", "s")  # p1 wins each round
 
     assert last is not None
     assert last.valid is True
     assert last.ended is True
     assert g.ended is True
-    assert g.p1_points == 5
+    assert g.p1_points == 3
     assert g.p2_points == 0
 
     after = g.step("k", "k")
@@ -81,11 +81,11 @@ def test_game_ends_when_someone_reaches_five_wins():
     assert after.valid is False
 
 
-def test_game_ends_when_player2_reaches_five_wins():
+def test_game_ends_when_player2_reaches_three_wins():
     g = Game(GameType.HUMAN)
 
     last = None
-    for _ in range(5):
+    for _ in range(3):
         last = g.step("k", "p")  # p2 wins each round
 
     assert last is not None
@@ -93,7 +93,7 @@ def test_game_ends_when_player2_reaches_five_wins():
     assert last.ended is True
     assert g.ended is True
     assert g.p1_points == 0
-    assert g.p2_points == 5
+    assert g.p2_points == 3
 
 
 def test_game_ai_object_missing_guard():

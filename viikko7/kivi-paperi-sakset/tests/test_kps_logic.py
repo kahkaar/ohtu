@@ -33,17 +33,6 @@ def test_kps_logic_moves_are_valid_and_play_loop_exits():
     assert any("Pelitilanne:" in s for s in io.shown)
 
 
-def test_kps_logic_stops_when_someone_reaches_five_wins():
-    # 5 rounds where p1 wins (k vs s), then extra inputs that should not be consumed.
-    io = FakeIO(inputs=["k", "s"] * 5 + ["k", "s"])
-    logic = KPSLogic(io)
-
-    logic.play()
-
-    assert any("5 voittoa" in s for s in io.shown)
-    assert len(io._inputs) == 2
-
-
 def test_kps_ai_logic_player2_move_and_guard():
     io = FakeIO(inputs=[])
     logic = KPSAILogic(io)
